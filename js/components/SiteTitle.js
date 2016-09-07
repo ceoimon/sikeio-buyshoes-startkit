@@ -1,14 +1,14 @@
 const React = require("react");
+const { connect } = require("react-redux");
 
-let SiteTitle = React.createClass({
-  render() {
-    return (
-      <div className="title">
-        <h2>Buy Me Shoes</h2>
-        <img className="title__heart" src="img/heart.svg" />
-      </div>
-    );
-  }
-});
+const { toggleShowLiked } = require("../redux/actions");
+const { SHOW_LIKED } = require("../redux/constants");
 
-module.exports = SiteTitle;
+const SiteTitle = ({ curFilter, onShowLikeClick }) => (
+  <div className="title">
+    <h2>Buy Me Shoes</h2>
+    <img onClick={() => onShowLikeClick(curFilter)} className="title__heart" src={`${curFilter === SHOW_LIKED ? "img/heart-liked.svg" : "img/heart.svg"}`} />
+  </div>
+);
+
+module.exports = connect(state => ({ curFilter: state.productsfilter }), { onShowLikeClick: toggleShowLiked })(SiteTitle);

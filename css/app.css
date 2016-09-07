@@ -52,6 +52,7 @@ p {
 }
 
 a {
+  cursor: pointer;
   font-weight: 400;
 }
 
@@ -92,6 +93,10 @@ a {
   background: #2C3A51;
   padding: 15px 0;
   display: none;
+}
+
+.title__heart {
+  cursor: pointer;
 }
 
 .site__main {
@@ -183,6 +188,7 @@ a {
   background-color: #D8D8D8;
   justify-content: center;
   margin: 15px;
+  cursor: pointer;
 }
 
 .product__price {
@@ -213,6 +219,7 @@ a {
 }
 
 .product__heart {
+  cursor: pointer;
 }
 
 
@@ -298,11 +305,13 @@ a {
 }
 
 .cart-item__trash {
+  cursor: pointer;
 }
 
 .adjust-qty {
   flex-direction: row;
   align-items: center;
+  user-select: none;
 }
 
 .adjust-qty__button {

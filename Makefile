@@ -1,5 +1,6 @@
 .PHONY: all
 all:
+	@PATH="./node_modules/.bin:$$PATH"; \
 	(make css & make js & make server & wait)
 
 .PHONY: css
