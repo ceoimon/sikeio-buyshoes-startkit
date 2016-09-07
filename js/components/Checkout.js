@@ -24,11 +24,8 @@ const Checkout = ({ subtotal }) => (
   </div>
 );
 
-const getProductById = (products, id) => products.find(product => product.id === id);
+// const calcSubtotal = (cart, products) => cart.map(item => item.toObject()).toArray().reduce((subtotal, item) => subtotal + products.map(product => product.toObject()).toArray().find(product => product.id === item.id)["price"] * item.quantity, 0);
 
-const calcSubtotal = (cart, products) => cart.reduce((subtotal, item) => {
-  const product = getProductById(products, item.id);
-  return product ? subtotal + product.price * item.quantity : subtotal;
-}, 0);
+const calcSubtotal = (cart, products) => cart.reduce((subtotal, item) => subtotal + products.find(product => product.get("id") === item.get("id")).get("price") * item.get("quantity"), 0);
 
 module.exports = connect(state => ({ subtotal: calcSubtotal(state.cart, state.products) }), null)(Checkout);

@@ -12,9 +12,9 @@ const {
 } = require("../redux/actions");
 
 let CartItem = ({
-  id, quantity, index,
+  id, quantity,
   price, imagePath, name,
-  onRemoveClick, onAddClick, onRemoveAllClick
+  handleRemoveClick, handleAddClick, handleRemoveAllClick
 }) => (
   <div className="cart-item">
     <div className="cart-item__top-part">
@@ -33,20 +33,20 @@ let CartItem = ({
           }
         </div>
       </div>
-      <img onClick={() => onRemoveAllClick(index, id, quantity)} className="cart-item__trash" src="img/trash-icon.svg" />
+      <img onClick={() => handleRemoveAllClick(id, quantity)} className="cart-item__trash" src="img/trash-icon.svg" />
     </div> {/* cart-item__top-part */}
     <div className="cart-item__qty">
-      <QuantityControl quantity={quantity} onRemoveClick={() => onRemoveClick(index, id)} onAddClick={() => onAddClick(index, id)} />
+      <QuantityControl quantity={quantity} onRemoveClick={() => handleRemoveClick(id)} onAddClick={() => handleAddClick(id)} />
     </div>
   </div>
 );
 
 CartItem = connect(
-  ({ products }, { id }) => products.find(product => product.id === id),
+  ({ products }, { id }) => products.find(product => product.get("id") === id).toObject(),
   {
-    onRemoveClick: removeOneFromCart,
-    onAddClick: addOneToCart,
-    onRemoveAllClick: removeProductFromCart
+    handleRemoveClick: removeOneFromCart,
+    handleAddClick: addOneToCart,
+    handleRemoveAllClick: removeProductFromCart
   }
 )(CartItem);
 
@@ -63,11 +63,11 @@ class Cart extends React.Component {
         <h3 className="cart__title">Shopping Cart</h3>
         <div ref={(content) => {this.content = content}} className="cart__content">
           <h3 className="cart__title cart__title--spacer">Shopping Cart</h3>
-          {cart.map((item, index) => (<CartItem key={item.id} {...item} index={index} />))}
+          {cart.map(item => (<CartItem key={item.id} {...item} />))}
         </div> {/* cart-item */}
       </div>
     );
   }
 }
 
-module.exports = connect(state => ({ cart: state.cart }), { getDummyCart })(Cart);
+module.exports = connect(state => ({ cart: state.cart.map(item => item.toObject()).toArray() }), { getDummyCart })(Cart);

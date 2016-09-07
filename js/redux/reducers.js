@@ -1,4 +1,5 @@
 const { combineReducers } = require("redux");
+const { List, OrderedMap, Set, fromJS, Map } = require("immutable");
 
 const { 
   SET_PRODUCTS,
@@ -7,63 +8,36 @@ const {
   SET_CART,
   TOGGLE_PRODUCT_LIKE,
   SET_LIKE_PRODUCTS,
-  SET_PRODUCTS_FILTER
+  SET_PRODUCTS_FILTER,
+  ALL,
+  SHOW_LIKED
 } = require("./constants");
 
-const item = (state, action) => {
-  switch (action.type) {
-    case ADD_PRODUCT_TO_CART:
-      return (
-        state
-          ? Object.assign({}, state, {
-            quantity: state.quantity + action.quantity
-          })
-          : {
-            id: action.id,
-            quantity: action.quantity
-          }
-      );
-    case REMOVE_PRODUCT_FROM_CART:
-      return (
-        state.quantity > 1
-          ? Object.assign({}, state, {
-            quantity: Math.max(state.quantity - action.quantity, 0)
-          })
-          : Object.assign({}, state, {
-            quantity: 0
-          })
-      )
-    default:
-      return state;
-  }
-}
-
-const products = (state = [], action) => {
+const products = (state = List(), action) => {
   switch (action.type) {
     case SET_PRODUCTS:
-      return action.products;
+      return fromJS(action.products).toList();
     default:
       return state;
   }
 }
 
-const likeProducts = (state = [], action) => {
+const likeProducts = (state = Set(), action) => {
   switch (action.type) {
     case TOGGLE_PRODUCT_LIKE:
-      const index = state.indexOf(action.id);
       return (
-        index !== -1
-          ? [...state.slice(0, index), ...state.slice(index + 1)]
-          : [...state, action.id]
+        state.has(action.id)
+          ? state.delete(action.id)
+          : state.add(action.id)
       );
     case SET_LIKE_PRODUCTS:
-      return action.products;
+      return Set(action.products);
     default:
       return state;
   }
 }
 
-const productsfilter = (state = "ALL", action) => {
+const productsfilter = (state = ALL, action) => {
   switch (action.type) {
     case SET_PRODUCTS_FILTER:
       return action.filter;
@@ -72,19 +46,17 @@ const productsfilter = (state = "ALL", action) => {
   }
 };
 
-const cart = (state = [], action) => {
+const cart = (state = OrderedMap(), action) => {
   switch (action.type) {
     case ADD_PRODUCT_TO_CART:
-      return [...state.slice(0, action.index), item(state[action.index], action), ...state.slice(action.index + 1)];
+      return state.update(action.id, Map({
+        id: action.id,
+        quantity: 0
+      }), item => item.update("quantity", quantity => quantity + action.quantity));
     case REMOVE_PRODUCT_FROM_CART:
-      const remainItem = item(state[action.index], action);
-      return (
-        remainItem.quantity > 0
-          ? [...state.slice(0, action.index), remainItem, ...state.slice(action.index + 1)]
-          : [...state.slice(0, action.index), ...state.slice(action.index + 1)]
-      );
+      return state.updateIn([action.id, "quantity"], quantity => Math.max(quantity - action.quantity, 0)).filter(item => item.get("quantity") > 0);
     case SET_CART:
-      return action.cart;
+      return fromJS(action.cart).toOrderedMap();
     default:
       return state;
   }

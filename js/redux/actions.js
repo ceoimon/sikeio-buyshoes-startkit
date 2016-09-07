@@ -14,11 +14,11 @@ const {
 const getDummyProducts = () => ({ type: SET_PRODUCTS, products });
 const getDummyCart = () => ({ type: SET_CART, cart });
 
-const addProductToCart = (index, id, quantity = 1) => ({ type: ADD_PRODUCT_TO_CART, index, id, quantity });
-const removeProductFromCart = (index, id, quantity = 1) => ({ type: REMOVE_PRODUCT_FROM_CART, index, id, quantity });
+const addProductToCart = (id, quantity = 1) => ({ type: ADD_PRODUCT_TO_CART, id, quantity });
+const removeProductFromCart = (id, quantity = 1) => ({ type: REMOVE_PRODUCT_FROM_CART, id, quantity });
 
-const addOneToCart = (index, id) => addProductToCart(index, id);
-const removeOneFromCart = (index, id) => removeProductFromCart(index, id);
+const addOneToCart = (id) => addProductToCart(id);
+const removeOneFromCart = (id) => removeProductFromCart(id);
 
 const toggleProductLike = (id) => ({ type: TOGGLE_PRODUCT_LIKE, id});
 

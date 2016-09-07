@@ -13,8 +13,8 @@ const {
 let Product = ({ 
   id, 
   name, price, imagePath,
-  quantity, cartsIndex, isLiked,
-  onRemoveClick, onAddClick, onLikeClick
+  quantity, isLiked,
+  handleRemoveClick, handleAddClick, handleLikeClick
 }) => (
   <div className="product">
     <div className="product__display">
@@ -25,10 +25,10 @@ let Product = ({
         {
           quantity > 0
             ? (
-              <QuantityControl quantity={quantity} variant="gray" onRemoveClick={() => onRemoveClick(cartsIndex, id)} onAddClick={() => onAddClick(cartsIndex, id)} />
+              <QuantityControl quantity={quantity} variant="gray" onRemoveClick={() => handleRemoveClick(id)} onAddClick={() => handleAddClick(id)} />
             )
             : (
-              <a className="product__add" onClick={() => onAddClick(cartsIndex, id)}>
+              <a className="product__add" onClick={() => handleAddClick(id)}>
                 <img className="product__add__icon" src="img/cart-icon.svg" />
               </a>
             )
@@ -43,38 +43,22 @@ let Product = ({
         {name}
       </div>
       <img 
-        onClick={() => onLikeClick(id)} 
+        onClick={() => handleLikeClick(id)} 
         className="product__heart" src={`${isLiked ? "img/heart-liked.svg" : "img/heart.svg"}`}
       />
     </div>
   </div>
 );
 
-const mapStateToProps = ({ cart, likeProducts }, { id }) => {
-  let cartsIndex = cart.length;
-
-  const cartsItem = cart.find((item, i) => {
-    if (item.id === id) {
-      cartsIndex = i;
-      return true;
-    } else {
-      return false
-    }
-  });
-
-  const isLiked = likeProducts.indexOf(id) !== -1;
-
-  const quantity = cartsItem ? cartsItem.quantity : 0;
-
-  return { cartsIndex, quantity, isLiked }
-};
-
 Product = connect(
-  mapStateToProps,
+  ({ cart, likeProducts }, { id }) => ({ 
+    quantity: cart.getIn([id, "quantity"], 0),
+    isLiked: likeProducts.includes(id) }
+  ),
   {
-    onRemoveClick: removeOneFromCart,
-    onAddClick: addOneToCart,
-    onLikeClick: toggleProductLike
+    handleRemoveClick: removeOneFromCart,
+    handleAddClick: addOneToCart,
+    handleLikeClick: toggleProductLike
   }
 )(Product);
 
@@ -96,9 +80,9 @@ class Products extends React.Component {
 const getVisibleProducts = (filter, state) => {
   switch (filter) {
     case "SHOW_LIKED":
-      return state.products.filter(product => state.likeProducts.indexOf(product.id) !== -1);
+      return state.products.filter(product => state.likeProducts.includes(product.get("id"))).map(product => product.toObject()).toArray();
     default:
-      return state.products;
+      return state.products.map(product => product.toObject()).toArray();
   }
 }
 
