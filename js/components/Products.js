@@ -11,8 +11,7 @@ const {
 } = require("../redux/actions");
 
 let Product = ({ 
-  id, 
-  name, price, imagePath,
+  id, name, price, imagePath,
   quantity, isLiked,
   handleRemoveClick, handleAddClick, handleLikeClick
 }) => (
@@ -53,8 +52,8 @@ let Product = ({
 Product = connect(
   ({ cart, likeProducts }, { id }) => ({ 
     quantity: cart.getIn([id, "quantity"], 0),
-    isLiked: likeProducts.includes(id) }
-  ),
+    isLiked: likeProducts.includes(id)
+  }),
   {
     handleRemoveClick: removeOneFromCart,
     handleAddClick: addOneToCart,
